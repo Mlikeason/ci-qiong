@@ -862,7 +862,7 @@ function init() {
   // Card actions
   $("#reshuffleBtn").addEventListener("click", reshuffle);
   $("#saveBtn").addEventListener("click", saveToCalendar);
-  $("#exportBtn").addEventListener("click", exportImage);
+  $("#exportBtn").addEventListener("click", () => exportImage());
 
   // Calendar nav
   $("#calPrev").addEventListener("click", () => {
