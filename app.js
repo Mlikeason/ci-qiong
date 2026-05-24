@@ -484,10 +484,10 @@ async function exportImage() {
   }
   // Canvas font sizes are 2.6× the screen card max (per cqi tiers in CSS)
   const canvasSizes = {
-    xshort: { fontSize: 250, lh: 1.06 },  // ≈ 96 × 2.6
-    short:  { fontSize: 208, lh: 1.10 },  // ≈ 80 × 2.6
-    medium: { fontSize: 166, lh: 1.14 },  // ≈ 64 × 2.6
-    long:   { fontSize: 135, lh: 1.20 },  // ≈ 52 × 2.6
+    xshort: { fontSize: 212, lh: 1.08 },  // ≈ 82 × 2.6
+    short:  { fontSize: 178, lh: 1.12 },  // ≈ 68 × 2.6
+    medium: { fontSize: 140, lh: 1.16 },  // ≈ 54 × 2.6
+    long:   { fontSize: 115, lh: 1.22 },  // ≈ 44 × 2.6
   };
   const { fontSize, lh } = canvasSizes[tier];
 
