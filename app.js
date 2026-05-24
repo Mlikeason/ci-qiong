@@ -1,21 +1,55 @@
 // ═══════════════ STATE & DATA ═══════════════
-// Expanded tag pools. The first 8 in each are the "canonical" tags used in lyric metadata.
-// Extra tags map to canonical ones via TAG_SYNONYMS so they still contribute to matching.
-const SCENES_POOL = ["工作","玩樂","躺平","旅行","見人","獨處","想念","創作",
-                     "學習","加班","約會","看片","寫作","出門"];
-const MOODS_POOL = ["開心","平靜","透支","沮喪","焦慮","釋然","懷念","期待",
-                    "孤單","煩躁","感動","興奮","放空","麻木"];
-const FEELINGS_POOL = ["有收穫","想逃","被理解","被忽視","想改變","順其自然","想念某人","看清了",
-                       "想休息","被治癒","想喝酒","想哭","需要陪伴","沒感覺"];
+// Expanded tag pools — 30 per category. The first 8 in each are the "canonical"
+// tags used in lyric metadata; extras map to canonicals via TAG_SYNONYMS so
+// they still drive matching.
+const SCENES_POOL = [
+  "工作","玩樂","躺平","旅行","見人","獨處","想念","創作",
+  "學習","加班","約會","看片","寫作","出門",
+  "開會","通勤","健身","散步","做飯","喝酒","喝咖啡","聽歌",
+  "讀書","拍照","購物","看展","帶娃","排隊","趕路","走神",
+];
+const MOODS_POOL = [
+  "開心","平靜","透支","沮喪","焦慮","釋然","懷念","期待",
+  "孤單","煩躁","感動","興奮","放空","麻木",
+  "失落","滿足","緊張","委屈","後悔","驕傲","傷感","害羞",
+  "無聊","安心","不甘","自在","苦笑","雀躍","慵懶","心動",
+];
+const FEELINGS_POOL = [
+  "有收穫","想逃","被理解","被忽視","想改變","順其自然","想念某人","看清了",
+  "想休息","被治癒","想喝酒","想哭","需要陪伴","沒感覺",
+  "想說話","想獨處","想戀愛","想離開","被誤會","被需要","在等待","想擁抱",
+  "不想動","心軟了","看不開","想回家","重新開始","太累了","想睡覺","終於放下",
+];
 
-// Map extra tags to canonical ones for scoring
+// Map extra tags to canonical 8 tags for lyric scoring
 const TAG_SYNONYMS = {
+  // ── Scenes (canonical: 工作/玩樂/躺平/旅行/見人/獨處/想念/創作)
   "學習":["工作","獨處"], "加班":["工作","透支"], "約會":["見人","想念"],
   "看片":["玩樂","躺平"], "寫作":["創作","獨處"], "出門":["旅行","玩樂"],
+  "開會":["工作","見人"], "通勤":["工作","旅行"], "健身":["玩樂","獨處"],
+  "散步":["獨處","旅行"], "做飯":["躺平","獨處"], "喝酒":["玩樂","見人"],
+  "喝咖啡":["獨處","見人"], "聽歌":["獨處","創作"], "讀書":["獨處","創作"],
+  "拍照":["創作","旅行"], "購物":["玩樂","出門"], "看展":["旅行","創作"],
+  "帶娃":["工作","玩樂"], "排隊":["工作","旅行"], "趕路":["工作","旅行"],
+  "走神":["躺平","獨處"],
+  // ── Moods (canonical: 開心/平靜/透支/沮喪/焦慮/釋然/懷念/期待)
   "孤單":["沮喪","想念"], "煩躁":["焦慮","透支"], "感動":["懷念","釋然"],
   "興奮":["開心","期待"], "放空":["平靜","釋然"], "麻木":["透支","沮喪"],
+  "失落":["沮喪","懷念"], "滿足":["開心","釋然"], "緊張":["焦慮","期待"],
+  "委屈":["沮喪","想念"], "後悔":["沮喪","懷念"], "驕傲":["開心","期待"],
+  "傷感":["懷念","沮喪"], "害羞":["平靜","期待"], "無聊":["透支","平靜"],
+  "安心":["平靜","釋然"], "不甘":["焦慮","沮喪"], "自在":["平靜","釋然"],
+  "苦笑":["釋然","沮喪"], "雀躍":["開心","期待"], "慵懶":["平靜","透支"],
+  "心動":["期待","開心"],
+  // ── Feelings (canonical: 有收穫/想逃/被理解/被忽視/想改變/順其自然/想念某人/看清了)
   "想休息":["想逃","順其自然"], "被治癒":["有收穫","被理解"], "想喝酒":["想逃","想念某人"],
   "想哭":["沮喪","想念某人"], "需要陪伴":["想念某人","被理解"], "沒感覺":["順其自然","看清了"],
+  "想說話":["想念某人","被理解"], "想獨處":["想逃","順其自然"], "想戀愛":["想念某人","想改變"],
+  "想離開":["想逃","想改變"], "被誤會":["被忽視","想念某人"], "被需要":["被理解","有收穫"],
+  "在等待":["想念某人","看清了"], "想擁抱":["想念某人","被理解"], "不想動":["想逃","順其自然"],
+  "心軟了":["想念某人","看清了"], "看不開":["想念某人","想改變"], "想回家":["想念某人","想逃"],
+  "重新開始":["想改變","看清了"], "太累了":["想逃","順其自然"], "想睡覺":["想逃","順其自然"],
+  "終於放下":["看清了","順其自然"],
 };
 
 function expandTags(tags) {
@@ -205,35 +239,6 @@ function refreshTodayPage() {
     refreshTodayPage();
   });
 
-  // Show today's saved lyric, if any
-  const entries = loadEntries();
-  const todayEntry = entries[todayKey()];
-  const recent = $("#recentList");
-  recent.innerHTML = "";
-  const allKeys = Object.keys(entries).sort().reverse().slice(0, 4);
-  if (allKeys.length === 0) {
-    recent.innerHTML = '<div class="empty"><div class="empty-line">還沒有記錄</div><div style="font-size:12px">選完標籤，會有一句歌詞來找你</div></div>';
-  } else {
-    allKeys.forEach(k => {
-      const e = entries[k];
-      const row = document.createElement("div");
-      row.className = "report-row";
-      row.style.cursor = "pointer";
-      row.onclick = () => openDayModal(k);
-      const dt = new Date(k);
-      const c = getColors(e);
-      row.innerHTML = `
-        <div class="report-day-color" style="background:${c.bg}">
-          <span style="color:${c.fg};opacity:0.85">${dt.getMonth()+1}/${dt.getDate()}</span>
-        </div>
-        <div>
-          <div class="report-line">${e.line}</div>
-          <div class="report-attribution">${e.author} · ${e.song}</div>
-        </div>
-      `;
-      recent.appendChild(row);
-    });
-  }
 }
 
 function reset() {
@@ -411,7 +416,7 @@ function renderCard(lyric, animated = false) {
   // Update save button
   const entries = loadEntries();
   const saved = entries[todayKey()] && entries[todayKey()].line === lyric.line;
-  $("#saveBtn").textContent = saved ? "已 收 入 ✓" : "收 入 歌 歷";
+  $("#saveBtn").textContent = saved ? "已 收 入 ✓" : "收 入 歲 月";
   $("#saveBtn").classList.toggle("saved-indicator", saved);
 }
 
@@ -450,8 +455,8 @@ function saveToCalendar() {
 }
 
 // ═══════════════ CANVAS EXPORT ═══════════════
-async function exportImage() {
-  const lyric = state.currentLyric;
+async function exportImage(lyric) {
+  lyric = lyric || state.currentLyric;
   if (!lyric) return;
 
   // Wait for Noto Sans TC heavy weight to be ready before drawing
@@ -674,6 +679,7 @@ function openDayModal(dateK) {
   const entries = loadEntries();
   const e = entries[dateK];
   if (!e) return;
+  state.modalEntry = e;
   const colors = getColors(e);
   const dt = new Date(dateK);
   $("#modalDate").textContent = fmtDate(dt);
@@ -833,9 +839,6 @@ function seedDemoIfEmpty() {
 
 // ═══════════════ INIT & EVENTS ═══════════════
 function init() {
-  const now = new Date();
-  $("#topDate").textContent = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,"0")}.${String(now.getDate()).padStart(2,"0")}`;
-
   seedDemoIfEmpty();
 
   // Nav
@@ -875,6 +878,9 @@ function init() {
   $("#modalClose").addEventListener("click", closeDayModal);
   $("#dayModal").addEventListener("click", e => {
     if (e.target.id === "dayModal") closeDayModal();
+  });
+  $("#modalShare").addEventListener("click", () => {
+    if (state.modalEntry) exportImage(state.modalEntry);
   });
 
   // Report tabs
