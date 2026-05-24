@@ -526,6 +526,27 @@ async function exportImage() {
   ctx.fillStyle = colors.bg;
   ctx.fillText(lyric.author, PADDING + authorPadX, authorY + authorH / 2 + 1);
 
+  // ── Brand mark — bottom-right scribble logo, recolored to palette.fg, 50% opacity
+  try {
+    const logoImg = await loadImage("icons/logo-256.png");
+    const logoSize = 100;
+    const logoX = SIZE - PADDING - logoSize;
+    const logoY = SIZE - PADDING - logoSize;
+    // Recolor the black scribble to colors.fg using a temp canvas mask
+    const tmp = document.createElement("canvas");
+    tmp.width = logoSize;
+    tmp.height = logoSize;
+    const tctx = tmp.getContext("2d");
+    tctx.fillStyle = colors.fg;
+    tctx.fillRect(0, 0, logoSize, logoSize);
+    tctx.globalCompositeOperation = "destination-in";
+    tctx.drawImage(logoImg, 0, 0, logoSize, logoSize);
+    // Draw the recolored logo at half opacity
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(tmp, logoX, logoY);
+    ctx.globalAlpha = 1.0;
+  } catch (e) { /* logo load failed — skip silently */ }
+
   // Export — try native Web Share (iOS/Android sheet with WeChat, Instagram, etc.),
   // fall back to direct download (desktop browsers without share support).
   const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
@@ -562,6 +583,16 @@ function drawTrackedText(ctx, text, x, y, tracking) {
   Array.from(text).forEach(c => {
     ctx.fillText(c, cx, y);
     cx += ctx.measureText(c).width + tracking;
+  });
+}
+
+// Load an image as a Promise (used for compositing the logo into the export)
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
   });
 }
 
