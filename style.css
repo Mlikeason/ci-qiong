@@ -209,13 +209,9 @@ html, body {
 /* Font sizes are relative to the card's own width (cqi = % of container inline size).
    This makes screen and exported image visually identical proportions.
    At 408px card width: 24cqi = 98px, 20cqi = 82px, 16cqi = 65px, 13cqi = 53px */
-/* Sizes calibrated so 7 chars fits in one line at xshort tier (the biggest).
-   Card text width at max-width 408px and 22px padding ≈ 364px.
-   7 × 0.97 × 54 ≈ 367 → fits with -0.03em letter-spacing. */
-.card-line.xshort  { font-size: clamp(40px, 13cqi, 54px); line-height: 1.10; }  /* longest ≤7  */
-.card-line.short   { font-size: clamp(34px, 11cqi, 44px); line-height: 1.16; }  /* longest ≤9  */
-.card-line.medium  { font-size: clamp(28px, 9cqi, 36px);  line-height: 1.20; }  /* longest ≤12 */
-.card-line.long    { font-size: clamp(24px, 7cqi, 30px);  line-height: 1.24; }  /* longer      */
+/* Font-size is set inline by JS via auto-fit (calcAutoFitCqi).
+   Line-height stays here as a base since it doesn't depend on lyric structure. */
+.card-line { line-height: 1.12; }
 .card-attrib {
   opacity: 0;
   transition: opacity 0.7s ease;
@@ -404,11 +400,7 @@ html, body {
   align-items: flex-start;
   container-type: inline-size;
 }
-/* Modal lyric uses the same tier system as the main card, scaled to modal width */
-.modal-card .card-line.xshort { font-size: clamp(28px, 10cqi, 38px); line-height: 1.10; }
-.modal-card .card-line.short  { font-size: clamp(24px, 8cqi, 32px);  line-height: 1.16; }
-.modal-card .card-line.medium { font-size: clamp(20px, 7cqi, 26px);  line-height: 1.20; }
-.modal-card .card-line.long   { font-size: clamp(18px, 6cqi, 22px);  line-height: 1.24; }
+/* Modal font-size set inline by JS auto-fit (relative to modal-card via cqi) */
 .modal-tags {
   padding: 18px 28px;
   border-top: 1px solid var(--line-soft);
@@ -478,11 +470,10 @@ html, body {
   letter-spacing: 0.08em;
 }
 .report-line {
-  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+  font-family: "Songti SC", "Source Han Serif SC", serif;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 .report-attribution {
   font-size: 10px;

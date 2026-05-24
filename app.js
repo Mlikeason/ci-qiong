@@ -304,26 +304,28 @@ function splitToLines(line) {
   return line.split(/\s+/).filter(x => x.length > 0);
 }
 
-// Size tier based on TOTAL char count (per spec).
-// 7-char chunks should fit on a single line at the biggest tier (xshort).
-// Safety fallback: if a chunk would overflow at the chosen tier, shrink one step.
-function getSizeClass(line) {
-  const total = line.replace(/\s/g, "").length;
-  const longest = Math.max(...splitToLines(line).map(l => l.length));
+// Auto-fit font sizing.
+// Compute the largest font size that fits the lyric within the available
+// area, constrained by both the longest line (horizontal) and the line
+// count (vertical). Returns a unitless number — caller decides whether
+// to interpret it as cqi (screen) or px (canvas).
+function calcAutoFit(lines, areaW, areaH, opts = {}) {
+  const charFactor = opts.charFactor ?? 0.95;  // Chinese char width / font-size
+  const lineHeight = opts.lineHeight ?? 1.12;
+  const longest = Math.max(...lines.map(l => l.length));
+  const N = lines.length;
+  const byWidth = areaW / (longest * charFactor);
+  const byHeight = areaH / (N * lineHeight);
+  let size = Math.min(byWidth, byHeight);
+  if (opts.min != null) size = Math.max(opts.min, size);
+  if (opts.max != null) size = Math.min(opts.max, size);
+  return size;
+}
 
-  let tier;
-  if (total < 12)       tier = "xshort";  // largest
-  else if (total < 18)  tier = "short";
-  else if (total <= 25) tier = "medium";
-  else                  tier = "long";    // smallest
-
-  // Safety: each tier's max chunk that still fits at that font size.
-  const ceil = { xshort: 7, short: 9, medium: 12, long: 20 };
-  const order = ["xshort", "short", "medium", "long"];
-  while (longest > ceil[tier] && order.indexOf(tier) < order.length - 1) {
-    tier = order[order.indexOf(tier) + 1];
-  }
-  return tier;
+// Convenience: compute font-size in `cqi` units for the screen card / modal.
+// areaWPct / areaHPct are the lyric-area dimensions as % of the container.
+function calcAutoFitCqi(lines, areaWPct = 88, areaHPct = 73, max = 32) {
+  return calcAutoFit(lines, areaWPct, areaHPct, { min: 7, max });
 }
 
 // Render the lyric as line elements, each with per-character stagger spans
@@ -360,9 +362,12 @@ function renderCard(lyric, animated = false) {
   const colors = getColors(lyric);
   card.style.background = colors.bg;
   const lineEl = $("#cardLine");
-  lineEl.className = "card-line heavy " + getSizeClass(lyric.line);
+  lineEl.className = "card-line heavy";
   lineEl.style.color = colors.fg;
   lineEl.style.webkitTextStroke = `1.2px ${colors.fg}`;
+  // Auto-fit: lyric area ≈ 88% × 73% of card (after padding 22 + badge zone)
+  const cqi = calcAutoFitCqi(splitToLines(lyric.line), 88, 73, 30);
+  lineEl.style.fontSize = `${cqi}cqi`;
   lineEl.innerHTML = "";
   const { frag, count } = renderLyricLines(lyric.line, animated);
   lineEl.appendChild(frag);
@@ -465,58 +470,46 @@ async function exportImage() {
   ctx.fillStyle = colors.bg;
   ctx.fillRect(0, 0, SIZE, SIZE);
 
-  // Lyric — top-left, large bold, multiline by space-split.
-  // Sizes match the screen card EXACTLY (proportional to text-width).
-  // Screen card text width ≈ 348px (at max-width 440px app).
-  // Canvas text width = 1080 - 2*88 = 904px. Ratio = 2.6x.
-  const lines = splitToLines(lyric.line);
-  const total = lyric.line.replace(/\s/g, "").length;
-  const longest = Math.max(...lines.map(l => l.length));
-  // Pick tier by total length, fall back if longest chunk would overflow
-  let tier;
-  if (total < 10)       tier = "xshort";
-  else if (total < 16)  tier = "short";
-  else if (total <= 20) tier = "medium";
-  else                  tier = "long";
-  const ceil = { xshort: 3, short: 4, medium: 5, long: 7 };
-  const order = ["xshort", "short", "medium", "long"];
-  while (longest > ceil[tier] && order.indexOf(tier) < order.length - 1) {
-    tier = order[order.indexOf(tier) + 1];
-  }
-  // Canvas font sizes are 2.6× the screen card max (per cqi tiers in CSS)
-  const canvasSizes = {
-    xshort: { fontSize: 140, lh: 1.10 },  // ≈ 54 × 2.6
-    short:  { fontSize: 114, lh: 1.16 },  // ≈ 44 × 2.6
-    medium: { fontSize: 94,  lh: 1.20 },  // ≈ 36 × 2.6
-    long:   { fontSize: 78,  lh: 1.24 },  // ≈ 30 × 2.6
-  };
-  const { fontSize, lh } = canvasSizes[tier];
+  // ── Pre-compute attribution badge dimensions (we need to know how much
+  // vertical space they take before we can size the lyric).
+  const songFont    = 42, songPadX = 24, songPadY = 11;
+  const authorFont  = 28, authorPadX = 19, authorPadY = 7;
+  const badgeGap    = 11;
+  const songH   = songFont   + songPadY   * 2;
+  const authorH = authorFont + authorPadY * 2;
+  const songY   = SIZE - PADDING - songH;
+  const authorY = songY - badgeGap - authorH;
 
-  const lineHeight = fontSize * lh;
-  ctx.fillStyle = colors.fg;
-  ctx.strokeStyle = colors.fg;
-  ctx.lineWidth = 3; // emulates extra weight
-  ctx.lineJoin = "round";
+  // ── Auto-fit the lyric font to fill the available area without
+  // colliding with the badges.
+  const lines = splitToLines(lyric.line);
+  const lyricAreaTop    = PADDING;
+  const lyricAreaBottom = authorY - 28;        // small breathing gap
+  const lyricAreaW      = SIZE - PADDING * 2;
+  const lyricAreaH      = lyricAreaBottom - lyricAreaTop;
+  const fontSize = calcAutoFit(lines, lyricAreaW, lyricAreaH, {
+    charFactor: 0.95, lineHeight: 1.12, min: 60, max: 290,
+  });
+  const lineHeight = fontSize * 1.12;
+
+  ctx.fillStyle    = colors.fg;
+  ctx.strokeStyle  = colors.fg;
+  ctx.lineWidth    = Math.max(2, fontSize / 70);   // stroke scales with font
+  ctx.lineJoin     = "round";
   ctx.textBaseline = "top";
   ctx.font = `900 ${fontSize}px "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif`;
 
   lines.forEach((text, i) => {
-    const y = PADDING + i * lineHeight;
+    const y = lyricAreaTop + i * lineHeight;
     ctx.fillText(text, PADDING, y);
     ctx.strokeText(text, PADDING, y);
   });
 
-  // Attribution — two inverted-color badges, stacked vertically at bottom-left.
-  // Author smaller (on top), song larger (below). bg = palette.fg, text = palette.bg.
-  // Tight padding to match the screen at ≈ 2.6× ratio.
+  // ── Attribution badges — author smaller on top, song larger below
   ctx.strokeStyle = "transparent";
   ctx.lineWidth = 0;
   ctx.textBaseline = "middle";
 
-  // Song badge — bigger, at the bottom
-  const songFont = 42, songPadX = 24, songPadY = 8;
-  const songH = songFont + songPadY * 2;
-  const songY = SIZE - PADDING - songH;
   ctx.font = `700 ${songFont}px "PingFang SC", "Hiragino Sans GB", sans-serif`;
   const songTextW = ctx.measureText(lyric.song).width;
   const songW = songTextW + songPadX * 2;
@@ -525,10 +518,6 @@ async function exportImage() {
   ctx.fillStyle = colors.bg;
   ctx.fillText(lyric.song, PADDING + songPadX, songY + songH / 2 + 2);
 
-  // Author badge — smaller, above the song with a small gap
-  const authorFont = 28, authorPadX = 18, authorPadY = 5;
-  const authorH = authorFont + authorPadY * 2;
-  const authorY = songY - 10 - authorH;
   ctx.font = `700 ${authorFont}px "PingFang SC", "Hiragino Sans GB", sans-serif`;
   const authorTextW = ctx.measureText(lyric.author).width;
   const authorW = authorTextW + authorPadX * 2;
@@ -536,14 +525,6 @@ async function exportImage() {
   ctx.fillRect(PADDING, authorY, authorW, authorH);
   ctx.fillStyle = colors.bg;
   ctx.fillText(lyric.author, PADDING + authorPadX, authorY + authorH / 2 + 1);
-
-  // Brand logo — bottom-right, 50% opacity, serif to match the topbar
-  ctx.font = `500 40px "Songti SC", "Source Han Serif SC", "STSong", serif`;
-  ctx.fillStyle = withAlpha(colors.fg, 0.5);
-  ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "right";
-  ctx.fillText("词穷", SIZE - PADDING, SIZE - PADDING);
-  ctx.textAlign = "left"; // reset to default
 
   // Export — try native Web Share (iOS/Android sheet with WeChat, Instagram, etc.),
   // fall back to direct download (desktop browsers without share support).
@@ -655,13 +636,16 @@ function openDayModal(dateK) {
   const dt = new Date(dateK);
   $("#modalDate").textContent = fmtDate(dt);
   $("#modalCard").style.background = colors.bg;
-  // Render lyric with the same tier sizing as the main card (modal scales it down)
+  // Modal lyric uses the same auto-fit logic as the main card,
+  // with slightly tighter vertical constraint (smaller badge zone)
   const lineEl = $("#modalLine");
-  lineEl.className = "card-line heavy " + getSizeClass(e.line);
+  lineEl.className = "card-line heavy";
   lineEl.innerHTML = "";
   lineEl.style.color = colors.fg;
   lineEl.style.webkitTextStroke = `0.6px ${colors.fg}`;
   const lines = splitToLines(e.line);
+  const cqi = calcAutoFitCqi(lines, 88, 78, 28);  // modal cap slightly lower
+  lineEl.style.fontSize = `${cqi}cqi`;
   lines.forEach(t => {
     const div = document.createElement("div");
     div.className = "lyric-line";
