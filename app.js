@@ -305,19 +305,20 @@ function splitToLines(line) {
 }
 
 // Size tier based on TOTAL char count (per spec).
+// 7-char chunks should fit on a single line at the biggest tier (xshort).
 // Safety fallback: if a chunk would overflow at the chosen tier, shrink one step.
 function getSizeClass(line) {
   const total = line.replace(/\s/g, "").length;
   const longest = Math.max(...splitToLines(line).map(l => l.length));
 
   let tier;
-  if (total < 10)       tier = "xshort";  // largest
-  else if (total < 16)  tier = "short";
-  else if (total <= 20) tier = "medium";
+  if (total < 12)       tier = "xshort";  // largest
+  else if (total < 18)  tier = "short";
+  else if (total <= 25) tier = "medium";
   else                  tier = "long";    // smallest
 
-  // Safety: each tier has a longest-chunk ceiling (otherwise it overflows)
-  const ceil = { xshort: 3, short: 4, medium: 5, long: 7 };
+  // Safety: each tier's max chunk that still fits at that font size.
+  const ceil = { xshort: 7, short: 9, medium: 12, long: 20 };
   const order = ["xshort", "short", "medium", "long"];
   while (longest > ceil[tier] && order.indexOf(tier) < order.length - 1) {
     tier = order[order.indexOf(tier) + 1];
@@ -453,7 +454,7 @@ async function exportImage() {
   } catch (e) { /* fall back to system font */ }
 
   const SIZE = 1080;
-  const PADDING = 80;  // matches screen card's 30px padding × (1080/408) ratio
+  const PADDING = 58;  // matches screen card's 22px padding × (1080/408) ratio
   const canvas = document.createElement("canvas");
   canvas.width = SIZE;
   canvas.height = SIZE;
@@ -484,10 +485,10 @@ async function exportImage() {
   }
   // Canvas font sizes are 2.6× the screen card max (per cqi tiers in CSS)
   const canvasSizes = {
-    xshort: { fontSize: 212, lh: 1.08 },  // ≈ 82 × 2.6
-    short:  { fontSize: 178, lh: 1.12 },  // ≈ 68 × 2.6
-    medium: { fontSize: 140, lh: 1.16 },  // ≈ 54 × 2.6
-    long:   { fontSize: 115, lh: 1.22 },  // ≈ 44 × 2.6
+    xshort: { fontSize: 140, lh: 1.10 },  // ≈ 54 × 2.6
+    short:  { fontSize: 114, lh: 1.16 },  // ≈ 44 × 2.6
+    medium: { fontSize: 94,  lh: 1.20 },  // ≈ 36 × 2.6
+    long:   { fontSize: 78,  lh: 1.24 },  // ≈ 30 × 2.6
   };
   const { fontSize, lh } = canvasSizes[tier];
 
@@ -654,11 +655,12 @@ function openDayModal(dateK) {
   const dt = new Date(dateK);
   $("#modalDate").textContent = fmtDate(dt);
   $("#modalCard").style.background = colors.bg;
-  // Render lyric with space-as-newline
+  // Render lyric with the same tier sizing as the main card (modal scales it down)
   const lineEl = $("#modalLine");
+  lineEl.className = "card-line heavy " + getSizeClass(e.line);
   lineEl.innerHTML = "";
   lineEl.style.color = colors.fg;
-  lineEl.style.webkitTextStroke = `0.8px ${colors.fg}`;
+  lineEl.style.webkitTextStroke = `0.6px ${colors.fg}`;
   const lines = splitToLines(e.line);
   lines.forEach(t => {
     const div = document.createElement("div");

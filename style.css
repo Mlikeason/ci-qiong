@@ -188,7 +188,7 @@ html, body {
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 32px 30px 28px;
+  padding: 22px;
   position: relative;
   transition: background 0.6s ease;
   overflow: hidden;
@@ -198,9 +198,9 @@ html, body {
   font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
                "Source Han Sans CN", "Microsoft YaHei", sans-serif;
   font-weight: 900;
-  font-size: 72px;
+  font-size: 54px;
   line-height: 1.12;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   word-break: keep-all;
   text-align: left;
   /* color and -webkit-text-stroke are set inline based on palette */
@@ -209,10 +209,13 @@ html, body {
 /* Font sizes are relative to the card's own width (cqi = % of container inline size).
    This makes screen and exported image visually identical proportions.
    At 408px card width: 24cqi = 98px, 20cqi = 82px, 16cqi = 65px, 13cqi = 53px */
-.card-line.xshort  { font-size: clamp(60px, 20cqi, 82px); line-height: 1.08; }  /* total <10 */
-.card-line.short   { font-size: clamp(50px, 17cqi, 68px); line-height: 1.12; }  /* 10-15 */
-.card-line.medium  { font-size: clamp(40px, 14cqi, 54px); line-height: 1.16; }  /* 16-20 */
-.card-line.long    { font-size: clamp(32px, 11cqi, 44px); line-height: 1.22; }  /* >20 */
+/* Sizes calibrated so 7 chars fits in one line at xshort tier (the biggest).
+   Card text width at max-width 408px and 22px padding ≈ 364px.
+   7 × 0.97 × 54 ≈ 367 → fits with -0.03em letter-spacing. */
+.card-line.xshort  { font-size: clamp(40px, 13cqi, 54px); line-height: 1.10; }  /* longest ≤7  */
+.card-line.short   { font-size: clamp(34px, 11cqi, 44px); line-height: 1.16; }  /* longest ≤9  */
+.card-line.medium  { font-size: clamp(28px, 9cqi, 36px);  line-height: 1.20; }  /* longest ≤12 */
+.card-line.long    { font-size: clamp(24px, 7cqi, 30px);  line-height: 1.24; }  /* longer      */
 .card-attrib {
   opacity: 0;
   transition: opacity 0.7s ease;
@@ -394,18 +397,18 @@ html, body {
 }
 .modal-card {
   aspect-ratio: 1 / 1;
-  padding: 28px 26px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+  container-type: inline-size;
 }
-.modal-card .card-line {
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1.25;
-  font-family: "PingFang SC", "Hiragino Sans GB", sans-serif;
-}
+/* Modal lyric uses the same tier system as the main card, scaled to modal width */
+.modal-card .card-line.xshort { font-size: clamp(28px, 10cqi, 38px); line-height: 1.10; }
+.modal-card .card-line.short  { font-size: clamp(24px, 8cqi, 32px);  line-height: 1.16; }
+.modal-card .card-line.medium { font-size: clamp(20px, 7cqi, 26px);  line-height: 1.20; }
+.modal-card .card-line.long   { font-size: clamp(18px, 6cqi, 22px);  line-height: 1.24; }
 .modal-tags {
   padding: 18px 28px;
   border-top: 1px solid var(--line-soft);
@@ -475,10 +478,11 @@ html, body {
   letter-spacing: 0.08em;
 }
 .report-line {
-  font-family: "Songti SC", serif;
-  font-size: 12px;
-  line-height: 1.5;
-  letter-spacing: 0.02em;
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
 }
 .report-attribution {
   font-size: 10px;
