@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>词穷 · Lost for Words</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═══════════════ TOP BAR ═══════════════ -->
+  <header class="topbar">
+    <div class="brand">词穷</div>
+    <div class="date" id="topDate"></div>
+  </header>
+
+  <!-- ═══════════════ PAGE: TODAY ═══════════════ -->
+  <section class="page active" id="page-today">
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title serif" id="todayPrompt">你今天主要在做什么？</div>
+        <button class="section-reshuffle" data-category="scene">换 一 批</button>
+      </div>
+      <div class="chips" id="sceneChips"></div>
+    </div>
+
+    <div class="section" id="moodSection" style="display:none">
+      <div class="section-head">
+        <div class="section-title serif">那感觉怎么样？</div>
+        <button class="section-reshuffle" data-category="mood">换 一 批</button>
+      </div>
+      <div class="chips" id="moodChips"></div>
+    </div>
+
+    <div class="section" id="feelingSection" style="display:none">
+      <div class="section-head">
+        <div class="section-title serif">再具体一点？</div>
+        <button class="section-reshuffle" data-category="feeling">换 一 批</button>
+      </div>
+      <div class="chips" id="feelingChips"></div>
+    </div>
+
+    <div class="action-row" id="actionRow" style="display:none">
+      <button class="btn-primary" id="findBtn">送 我 一 句</button>
+      <button class="btn-ghost" id="resetBtn">重 选</button>
+    </div>
+
+    <div class="section" id="recentSection" style="margin-top:48px">
+      <div class="section-label">最 近</div>
+      <div id="recentList"></div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════ PAGE: PICK (3 face-down cards) ═══════════════ -->
+  <section class="page pick-page" id="page-pick">
+    <div class="pick-prompt">
+      <div class="section-label">挑 一 张</div>
+      <div class="pick-prompt-title serif">凭直觉，选你想翻开的那张</div>
+      <div class="pick-prompt-sub">颜色已经透露了语气</div>
+    </div>
+    <div class="pick-cards" id="pickCards"></div>
+    <div class="pick-skip">
+      <button id="pickSkip">不挑，随机给我一张</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PAGE: CARD ═══════════════ -->
+  <section class="page card-page" id="page-card">
+
+    <div class="card" id="lyricCard">
+      <div class="card-line heavy" id="cardLine"></div>
+      <div class="card-attrib" id="cardAttrib">
+        <span class="attrib-badge attrib-author" id="cardAuthor"></span>
+        <span class="attrib-badge attrib-song" id="cardSong"></span>
+      </div>
+    </div>
+
+    <div class="card-tags" id="cardTags"></div>
+
+    <div class="card-controls">
+      <button id="reshuffleBtn">换 一 句</button>
+      <button id="saveBtn">收 入 歌 历</button>
+      <button id="exportBtn">分 享</button>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════ PAGE: CALENDAR ═══════════════ -->
+  <section class="page page-tight" id="page-calendar">
+    <div class="cal-header">
+      <div class="cal-month serif" id="calMonth"></div>
+      <div class="cal-nav">
+        <button id="calPrev">←</button>
+        <button id="calNext">→</button>
+      </div>
+    </div>
+    <div class="cal-weekdays">
+      <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <span id="calCount"></span>
+      <span>点击格子查看那一天</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PAGE: REPORT ═══════════════ -->
+  <section class="page" id="page-report">
+    <div class="report-tabs">
+      <div class="report-tab active" data-range="week">本 周</div>
+      <div class="report-tab" data-range="month">本 月</div>
+    </div>
+    <div id="reportBody"></div>
+  </section>
+
+  <!-- ═══════════════ MODAL: DAY DETAIL ═══════════════ -->
+  <div class="modal-backdrop" id="dayModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-date serif" id="modalDate"></div>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <div class="modal-card" id="modalCard">
+        <div class="card-line heavy" id="modalLine"></div>
+        <div class="card-attrib">
+          <span class="attrib-badge attrib-author" id="modalAuthor"></span>
+          <span class="attrib-badge attrib-song" id="modalSong"></span>
+        </div>
+      </div>
+      <div class="modal-tags" id="modalTags"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ BOTTOM NAV ═══════════════ -->
+  <nav class="nav">
+    <a href="#today" class="nav-link active" data-page="today">今 天</a>
+    <a href="#calendar" class="nav-link" data-page="calendar">歌 历</a>
+    <a href="#report" class="nav-link" data-page="report">回 声</a>
+  </nav>
+
+</div>
+
+<script src="lyrics.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

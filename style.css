@@ -1,0 +1,630 @@
+/* Lyrical — editorial minimal prototype
+   Typography-first; no images; pure color cards.
+*/
+
+:root {
+  --bg: #faf8f5;
+  --ink: #1a1a1a;
+  --ink-soft: #5a5a5a;
+  --ink-faint: #999;
+  --line: #e6e2db;
+  --line-soft: #f0ece5;
+  --accent: #1a1a1a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-feature-settings: "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.serif { font-family: "Songti SC", "Source Han Serif SC", "Noto Serif SC", "STSong", serif; }
+
+.heavy {
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
+               "Source Han Sans CN", "Microsoft YaHei", -apple-system, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  font-synthesis: weight;
+}
+
+/* ─── App shell ───────────────────────────────────── */
+.app {
+  max-width: 440px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  position: relative;
+  padding-bottom: 80px;
+}
+
+/* ─── Top bar ─────────────────────────────────────── */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.brand {
+  font-family: "Songti SC", serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+.date {
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ─── Bottom nav ──────────────────────────────────── */
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-around;
+  padding: 14px 0 22px;
+  z-index: 50;
+}
+.nav a {
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s;
+}
+.nav a.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* ─── Page transitions ────────────────────────────── */
+.page { display: none; padding: 24px 24px; }
+.page.active { display: block; }
+.page-tight { padding: 24px 16px; }
+
+/* ─── Section ─────────────────────────────────────── */
+.section { margin-bottom: 36px; }
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: "Songti SC", serif;
+  font-size: 18px;
+  line-height: 1.5;
+}
+.section-reshuffle {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 4px 8px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.section-reshuffle:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.section-reshuffle:active { opacity: 0.5; }
+
+/* ─── Tag chips ───────────────────────────────────── */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 9px 16px;
+  font-size: 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.chip:hover { border-color: var(--ink-soft); }
+.chip.selected {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.chip.dim { color: var(--ink-faint); border-style: dashed; }
+
+/* ─── Primary action ──────────────────────────────── */
+.action-row {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+}
+.btn-primary {
+  flex: 1;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  padding: 16px;
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { background: var(--line); color: var(--ink-faint); cursor: not-allowed; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 16px 22px;
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-ghost:hover { background: var(--ink); color: var(--bg); }
+
+/* ─── Lyric card ──────────────────────────────────── */
+.card-page { padding: 16px; }
+.card {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px 30px 28px;
+  position: relative;
+  transition: background 0.6s ease;
+  overflow: hidden;
+  container-type: inline-size;  /* makes cqi units relative to card width */
+}
+.card-line {
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
+               "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+  font-weight: 900;
+  font-size: 72px;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+  text-align: left;
+  /* color and -webkit-text-stroke are set inline based on palette */
+}
+.card-line .lyric-line { display: block; }
+/* Font sizes are relative to the card's own width (cqi = % of container inline size).
+   This makes screen and exported image visually identical proportions.
+   At 408px card width: 24cqi = 98px, 20cqi = 82px, 16cqi = 65px, 13cqi = 53px */
+.card-line.xshort  { font-size: clamp(70px, 24cqi, 96px); line-height: 1.06; }  /* total <10 */
+.card-line.short   { font-size: clamp(58px, 20cqi, 80px); line-height: 1.10; }  /* 10-15 */
+.card-line.medium  { font-size: clamp(46px, 16cqi, 64px); line-height: 1.14; }  /* 16-20 */
+.card-line.long    { font-size: clamp(36px, 13cqi, 52px); line-height: 1.20; }  /* >20 */
+.card-attrib {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.card-attrib.shown { opacity: 1; }
+.attrib-badge {
+  font-family: "PingFang SC", "Hiragino Sans GB", -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: inline-block;
+  /* sharp corners — bg and color set inline based on palette */
+}
+.attrib-author { font-size: 11px; padding: 2px 7px 3px; }
+.attrib-song   { font-size: 16px; padding: 3px 9px 4px; }
+
+.card-controls {
+  padding: 20px 28px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid var(--line-soft);
+}
+.card-controls button {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 14px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+}
+.card-controls button:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.card-controls .saved-indicator { color: #5a8a4d; }
+
+/* ─── Tags summary on card ───────────────────────── */
+.card-tags {
+  margin-top: 20px;
+  padding: 0 28px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.card-tag {
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+/* ─── Calendar ────────────────────────────────────── */
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.cal-month {
+  font-family: "Songti SC", serif;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+}
+.cal-nav { display: flex; gap: 10px; }
+.cal-nav button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  padding: 4px 8px;
+}
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-bottom: 4px;
+  gap: 2px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  width: 100%;
+}
+.cal-cell {
+  aspect-ratio: 1;
+  background: var(--line-soft);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px;
+  transition: transform 0.1s;
+  border-radius: 2px;
+  overflow: hidden;
+  min-width: 0;
+}
+.cal-cell:hover { transform: scale(1.08); z-index: 5; }
+.cal-cell.empty { background: transparent; cursor: default; }
+.cal-cell.empty:hover { transform: none; }
+.cal-cell.today { outline: 2px solid var(--ink); outline-offset: -2px; }
+.cal-cell.has-entry .cal-day {
+  color: rgba(255,255,255,0.75);
+}
+.cal-day {
+  font-size: 10px;
+  color: var(--ink-faint);
+  font-family: -apple-system, sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.cal-glyph {
+  font-family: "Songti SC", serif;
+  color: rgba(255,255,255,0.92);
+  font-size: 13px;
+  line-height: 1;
+  text-align: right;
+  letter-spacing: 0;
+}
+
+/* ─── Calendar legend ──────────────────────────── */
+.cal-legend {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+}
+
+/* ─── Day detail (modal) ────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--bg);
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-header {
+  padding: 22px 28px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.modal-date {
+  font-family: "Songti SC", serif;
+  font-size: 18px;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.modal-card {
+  aspect-ratio: 1 / 1;
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.modal-card .card-line {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.25;
+  font-family: "PingFang SC", "Hiragino Sans GB", sans-serif;
+}
+.modal-tags {
+  padding: 18px 28px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.modal-card .attrib-author { font-size: 10px; padding: 2px 6px 3px; }
+.modal-card .attrib-song   { font-size: 13px; padding: 3px 8px 4px; }
+
+/* ─── Report ───────────────────────────────────── */
+.report-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+.report-tab {
+  flex: 1;
+  padding: 14px;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  color: var(--ink-faint);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.report-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.report-narrative {
+  font-family: "Songti SC", serif;
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--ink);
+  margin-bottom: 32px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid var(--line-soft);
+}
+
+.report-list { margin-top: 16px; }
+.report-row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line-soft);
+  gap: 14px;
+}
+.report-row:last-child { border-bottom: none; }
+.report-day-color {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 5px 6px;
+}
+.report-day-color span {
+  font-size: 9px;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.08em;
+}
+.report-line {
+  font-family: "Songti SC", serif;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+.report-attribution {
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+.report-stats {
+  margin-top: 32px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid var(--line-soft);
+}
+.report-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.report-stat-row:last-child { border-bottom: none; }
+.report-stat-label { color: var(--ink-soft); letter-spacing: 0.04em; }
+.report-stat-value { font-family: "Songti SC", serif; }
+
+/* ─── Empty state ─────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ink-faint);
+}
+.empty-line {
+  font-family: "Songti SC", serif;
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--ink-soft);
+}
+
+/* ─── Reveal animation ──────────────────────── */
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal { animation: reveal 0.5s ease both; }
+.reveal-delayed { animation: reveal 0.7s ease 0.2s both; opacity: 0; }
+
+/* ─── Pick page (three cards face-down) ───── */
+.pick-page { padding: 32px 24px; }
+.pick-prompt {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.pick-prompt .section-label { margin-bottom: 12px; }
+.pick-prompt-title {
+  font-family: "Songti SC", serif;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.pick-prompt-sub {
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  margin-top: 10px;
+}
+
+.pick-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.pick-card {
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.pick-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+.pick-card-num {
+  font-family: "Songti SC", serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.2em;
+}
+.pick-card::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+@keyframes pickFlipOut {
+  0% { transform: rotateY(0deg) scale(1); opacity: 1; }
+  100% { transform: rotateY(90deg) scale(0.9); opacity: 0; }
+}
+.pick-card.chosen { animation: pickFlipOut 0.45s ease forwards; }
+.pick-card.fade-out { opacity: 0.15; transition: opacity 0.45s ease; pointer-events: none; }
+
+.pick-skip {
+  text-align: center;
+  margin-top: 18px;
+}
+.pick-skip button {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 8px 16px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--line);
+}
+.pick-skip button:hover { color: var(--ink); }
+
+/* ─── Card reveal sequence ────────────────── */
+/* Card itself does a subtle scale-up entrance after flip */
+@keyframes cardEnter {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.card.entering { animation: cardEnter 0.55s ease both; }
+
+/* Per-character stagger reveal */
+.card-line .char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(8px);
+  animation: charIn 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.card-line .char.space { width: 0.4em; }
+@keyframes charIn {
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}

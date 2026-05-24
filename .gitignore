@@ -1,0 +1,10 @@
+.DS_Store
+*.log
+node_modules/
+.env
+.vscode/
+.idea/
+
+# Source corpus — only the curated 60-line subset (lyrics.js) ships with the app.
+# Full scrape excluded for copyright safety and repo size.
+eason_lyrics.json
