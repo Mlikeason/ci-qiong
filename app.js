@@ -75,7 +75,7 @@ function withRandomPalette(lyric, excludeKey = null) {
   return { ...lyric, palette };
 }
 
-const STORAGE_KEY = "lyrical_entries_v1";
+const STORAGE_KEY = "lyrical_entries_v2_tc";
 
 let state = {
   selectedScenes: [],
