@@ -310,7 +310,9 @@ function splitToLines(line) {
 // count (vertical). Returns a unitless number — caller decides whether
 // to interpret it as cqi (screen) or px (canvas).
 function calcAutoFit(lines, areaW, areaH, opts = {}) {
-  const charFactor = opts.charFactor ?? 0.95;  // Chinese char width / font-size
+  // charFactor 1.0 ensures right margin ≥ left margin (real CJK chars at
+  // weight 900 with -0.03em tracking are ≈ 0.97×, so 1.0 leaves ~3% safety)
+  const charFactor = opts.charFactor ?? 1.0;
   const lineHeight = opts.lineHeight ?? 1.12;
   const longest = Math.max(...lines.map(l => l.length));
   const N = lines.length;
@@ -364,7 +366,7 @@ function renderCard(lyric, animated = false) {
   const lineEl = $("#cardLine");
   lineEl.className = "card-line heavy";
   lineEl.style.color = colors.fg;
-  lineEl.style.webkitTextStroke = `1.2px ${colors.fg}`;
+  lineEl.style.webkitTextStroke = `0.5px ${colors.fg}`;
   // Auto-fit: lyric area ≈ 88% × 73% of card (after padding 22 + badge zone)
   const cqi = calcAutoFitCqi(splitToLines(lyric.line), 88, 73, 30);
   lineEl.style.fontSize = `${cqi}cqi`;
@@ -487,17 +489,26 @@ async function exportImage() {
   const lyricAreaBottom = authorY - 28;        // small breathing gap
   const lyricAreaW      = SIZE - PADDING * 2;
   const lyricAreaH      = lyricAreaBottom - lyricAreaTop;
-  const fontSize = calcAutoFit(lines, lyricAreaW, lyricAreaH, {
-    charFactor: 0.95, lineHeight: 1.12, min: 60, max: 290,
+  let fontSize = calcAutoFit(lines, lyricAreaW, lyricAreaH, {
+    charFactor: 1.0, lineHeight: 1.12, min: 60, max: 290,
   });
+
+  ctx.font = `900 ${fontSize}px "Noto Sans TC", "PingFang TC", "PingFang HK", "Hiragino Sans CNS", "Microsoft JhengHei", sans-serif`;
+  // Safety net: if the rendered text actually exceeds the lyric area
+  // (font metrics differ from our charFactor estimate), shrink the font
+  // proportionally so right margin is always ≥ PADDING.
+  const widest = Math.max(...lines.map(l => ctx.measureText(l).width));
+  if (widest > lyricAreaW) {
+    fontSize = Math.floor(fontSize * (lyricAreaW / widest) * 0.99);
+    ctx.font = `900 ${fontSize}px "Noto Sans TC", "PingFang TC", "PingFang HK", "Hiragino Sans CNS", "Microsoft JhengHei", sans-serif`;
+  }
   const lineHeight = fontSize * 1.12;
 
   ctx.fillStyle    = colors.fg;
   ctx.strokeStyle  = colors.fg;
-  ctx.lineWidth    = Math.max(2, fontSize / 70);   // stroke scales with font
+  ctx.lineWidth    = Math.max(0.6, fontSize / 160);   // softer stroke — Noto Sans TC 900 is plenty bold
   ctx.lineJoin     = "round";
   ctx.textBaseline = "top";
-  ctx.font = `900 ${fontSize}px "Noto Sans TC", "PingFang TC", "PingFang HK", "Hiragino Sans CNS", "Microsoft JhengHei", sans-serif`;
 
   lines.forEach((text, i) => {
     const y = lyricAreaTop + i * lineHeight;
@@ -673,7 +684,7 @@ function openDayModal(dateK) {
   lineEl.className = "card-line heavy";
   lineEl.innerHTML = "";
   lineEl.style.color = colors.fg;
-  lineEl.style.webkitTextStroke = `0.6px ${colors.fg}`;
+  lineEl.style.webkitTextStroke = `0.3px ${colors.fg}`;
   const lines = splitToLines(e.line);
   const cqi = calcAutoFitCqi(lines, 88, 78, 28);  // modal cap slightly lower
   lineEl.style.fontSize = `${cqi}cqi`;
