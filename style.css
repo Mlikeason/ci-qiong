@@ -17,17 +17,20 @@
 html, body {
   background: var(--bg);
   color: var(--ink);
-  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-family: -apple-system, "PingFang TC", "PingFang HK", "Hiragino Sans CNS", sans-serif;
   font-feature-settings: "kern" 1;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-.serif { font-family: "Songti SC", "Source Han Serif SC", "Noto Serif SC", "STSong", serif; }
+.serif {
+  font-family: "Noto Serif TC", "Songti TC", "Source Han Serif TC",
+               "Songti SC", "STSong", serif;
+}
 
 .heavy {
-  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
-               "Source Han Sans CN", "Microsoft YaHei", -apple-system, sans-serif;
+  font-family: "Noto Sans TC", "PingFang TC", "PingFang HK",
+               "Hiragino Sans CNS", "Microsoft JhengHei", -apple-system, sans-serif;
   font-weight: 900;
   letter-spacing: -0.01em;
   font-synthesis: weight;
@@ -54,10 +57,23 @@ html, body {
   border-bottom: 1px solid var(--line-soft);
 }
 .brand {
-  font-family: "Songti SC", serif;
-  font-size: 22px;
-  letter-spacing: 0.04em;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+.brand-name {
+  font-family: "Noto Serif TC", "Songti TC", "Source Han Serif TC",
+               "Songti SC", "STSong", serif;
+  font-size: 24px;
+  letter-spacing: 0.18em;   /* generous tracking for literary cadence */
+  font-weight: 700;
+  /* the key char-pair: 詞窮 — slight optical adjustment */
+  padding-right: 0.18em;
 }
 .date {
   font-size: 11px;
@@ -107,7 +123,7 @@ html, body {
   margin-bottom: 16px;
 }
 .section-title {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Source Han Serif TC", "Songti SC", serif;
   font-size: 18px;
   line-height: 1.5;
 }
@@ -195,8 +211,8 @@ html, body {
   container-type: inline-size;  /* makes cqi units relative to card width */
 }
 .card-line {
-  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
-               "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+  font-family: "Noto Sans TC", "PingFang TC", "PingFang HK",
+               "Hiragino Sans CNS", "Microsoft JhengHei", sans-serif;
   font-weight: 900;
   font-size: 54px;
   line-height: 1.12;
@@ -223,7 +239,7 @@ html, body {
 }
 .card-attrib.shown { opacity: 1; }
 .attrib-badge {
-  font-family: "PingFang SC", "Hiragino Sans GB", -apple-system, sans-serif;
+  font-family: "PingFang TC", "PingFang HK", "Hiragino Sans CNS", -apple-system, sans-serif;
   font-weight: 700;
   letter-spacing: 0.02em;
   display: inline-block;
@@ -276,7 +292,7 @@ html, body {
   margin-bottom: 16px;
 }
 .cal-month {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   font-size: 20px;
   letter-spacing: 0.06em;
 }
@@ -334,7 +350,7 @@ html, body {
   line-height: 1;
 }
 .cal-glyph {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   color: rgba(255,255,255,0.92);
   font-size: 13px;
   line-height: 1;
@@ -381,7 +397,7 @@ html, body {
   align-items: baseline;
 }
 .modal-date {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   font-size: 18px;
 }
 .modal-close {
@@ -434,7 +450,7 @@ html, body {
 }
 
 .report-narrative {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   font-size: 16px;
   line-height: 1.85;
   color: var(--ink);
@@ -470,7 +486,7 @@ html, body {
   letter-spacing: 0.08em;
 }
 .report-line {
-  font-family: "Songti SC", "Source Han Serif SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Source Han Serif TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   font-size: 14px;
   line-height: 1.5;
   letter-spacing: 0.02em;
@@ -497,7 +513,7 @@ html, body {
 }
 .report-stat-row:last-child { border-bottom: none; }
 .report-stat-label { color: var(--ink-soft); letter-spacing: 0.04em; }
-.report-stat-value { font-family: "Songti SC", serif; }
+.report-stat-value { font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif; }
 
 /* ─── Empty state ─────────────────────────────── */
 .empty {
@@ -506,7 +522,7 @@ html, body {
   color: var(--ink-faint);
 }
 .empty-line {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   font-size: 16px;
   margin-bottom: 8px;
   color: var(--ink-soft);
@@ -528,7 +544,7 @@ html, body {
 }
 .pick-prompt .section-label { margin-bottom: 12px; }
 .pick-prompt-title {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   font-size: 19px;
   line-height: 1.6;
   color: var(--ink);
@@ -563,7 +579,7 @@ html, body {
   box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
 .pick-card-num {
-  font-family: "Songti SC", serif;
+  font-family: "Noto Serif TC", "Songti TC", "Noto Serif TC", "Songti TC", "Songti SC", serif;
   font-size: 12px;
   color: rgba(255,255,255,0.55);
   letter-spacing: 0.2em;

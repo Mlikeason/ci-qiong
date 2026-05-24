@@ -1,21 +1,21 @@
 // ═══════════════ STATE & DATA ═══════════════
 // Expanded tag pools. The first 8 in each are the "canonical" tags used in lyric metadata.
 // Extra tags map to canonical ones via TAG_SYNONYMS so they still contribute to matching.
-const SCENES_POOL = ["工作","玩乐","躺平","旅行","见人","独处","想念","创作",
-                     "学习","加班","约会","看片","写作","出门"];
-const MOODS_POOL = ["开心","平静","透支","沮丧","焦虑","释然","怀念","期待",
-                    "孤单","烦躁","感动","兴奋","放空","麻木"];
-const FEELINGS_POOL = ["有收获","想逃","被理解","被忽视","想改变","顺其自然","想念某人","看清了",
-                       "想休息","被治愈","想喝酒","想哭","需要陪伴","没感觉"];
+const SCENES_POOL = ["工作","玩樂","躺平","旅行","見人","獨處","想念","創作",
+                     "學習","加班","約會","看片","寫作","出門"];
+const MOODS_POOL = ["開心","平靜","透支","沮喪","焦慮","釋然","懷念","期待",
+                    "孤單","煩躁","感動","興奮","放空","麻木"];
+const FEELINGS_POOL = ["有收穫","想逃","被理解","被忽視","想改變","順其自然","想念某人","看清了",
+                       "想休息","被治癒","想喝酒","想哭","需要陪伴","沒感覺"];
 
 // Map extra tags to canonical ones for scoring
 const TAG_SYNONYMS = {
-  "学习":["工作","独处"], "加班":["工作","透支"], "约会":["见人","想念"],
-  "看片":["玩乐","躺平"], "写作":["创作","独处"], "出门":["旅行","玩乐"],
-  "孤单":["沮丧","想念"], "烦躁":["焦虑","透支"], "感动":["怀念","释然"],
-  "兴奋":["开心","期待"], "放空":["平静","释然"], "麻木":["透支","沮丧"],
-  "想休息":["想逃","顺其自然"], "被治愈":["有收获","被理解"], "想喝酒":["想逃","想念某人"],
-  "想哭":["沮丧","想念某人"], "需要陪伴":["想念某人","被理解"], "没感觉":["顺其自然","看清了"],
+  "學習":["工作","獨處"], "加班":["工作","透支"], "約會":["見人","想念"],
+  "看片":["玩樂","躺平"], "寫作":["創作","獨處"], "出門":["旅行","玩樂"],
+  "孤單":["沮喪","想念"], "煩躁":["焦慮","透支"], "感動":["懷念","釋然"],
+  "興奮":["開心","期待"], "放空":["平靜","釋然"], "麻木":["透支","沮喪"],
+  "想休息":["想逃","順其自然"], "被治癒":["有收穫","被理解"], "想喝酒":["想逃","想念某人"],
+  "想哭":["沮喪","想念某人"], "需要陪伴":["想念某人","被理解"], "沒感覺":["順其自然","看清了"],
 };
 
 function expandTags(tags) {
@@ -212,7 +212,7 @@ function refreshTodayPage() {
   recent.innerHTML = "";
   const allKeys = Object.keys(entries).sort().reverse().slice(0, 4);
   if (allKeys.length === 0) {
-    recent.innerHTML = '<div class="empty"><div class="empty-line">还没有记录</div><div style="font-size:12px">选完标签，会有一句歌词来找你</div></div>';
+    recent.innerHTML = '<div class="empty"><div class="empty-line">還沒有記錄</div><div style="font-size:12px">選完標籤，會有一句歌詞來找你</div></div>';
   } else {
     allKeys.forEach(k => {
       const e = entries[k];
@@ -409,7 +409,7 @@ function renderCard(lyric, animated = false) {
   // Update save button
   const entries = loadEntries();
   const saved = entries[todayKey()] && entries[todayKey()].line === lyric.line;
-  $("#saveBtn").textContent = saved ? "已 收 入 ✓" : "收 入 歌 历";
+  $("#saveBtn").textContent = saved ? "已 收 入 ✓" : "收 入 歌 歷";
   $("#saveBtn").classList.toggle("saved-indicator", saved);
 }
 
@@ -452,9 +452,9 @@ async function exportImage() {
   const lyric = state.currentLyric;
   if (!lyric) return;
 
-  // Wait for Noto Sans SC heavy weight to be ready before drawing
+  // Wait for Noto Sans TC heavy weight to be ready before drawing
   try {
-    await document.fonts.load('900 100px "Noto Sans SC"');
+    await document.fonts.load('900 100px "Noto Sans TC"');
     await document.fonts.ready;
   } catch (e) { /* fall back to system font */ }
 
@@ -497,7 +497,7 @@ async function exportImage() {
   ctx.lineWidth    = Math.max(2, fontSize / 70);   // stroke scales with font
   ctx.lineJoin     = "round";
   ctx.textBaseline = "top";
-  ctx.font = `900 ${fontSize}px "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif`;
+  ctx.font = `900 ${fontSize}px "Noto Sans TC", "PingFang TC", "PingFang HK", "Hiragino Sans CNS", "Microsoft JhengHei", sans-serif`;
 
   lines.forEach((text, i) => {
     const y = lyricAreaTop + i * lineHeight;
@@ -510,7 +510,7 @@ async function exportImage() {
   ctx.lineWidth = 0;
   ctx.textBaseline = "middle";
 
-  ctx.font = `700 ${songFont}px "PingFang SC", "Hiragino Sans GB", sans-serif`;
+  ctx.font = `700 ${songFont}px "PingFang TC", "PingFang HK", "Hiragino Sans CNS", sans-serif`;
   const songTextW = ctx.measureText(lyric.song).width;
   const songW = songTextW + songPadX * 2;
   ctx.fillStyle = colors.fg;
@@ -518,7 +518,7 @@ async function exportImage() {
   ctx.fillStyle = colors.bg;
   ctx.fillText(lyric.song, PADDING + songPadX, songY + songH / 2 + 2);
 
-  ctx.font = `700 ${authorFont}px "PingFang SC", "Hiragino Sans GB", sans-serif`;
+  ctx.font = `700 ${authorFont}px "PingFang TC", "PingFang HK", "Hiragino Sans CNS", sans-serif`;
   const authorTextW = ctx.measureText(lyric.author).width;
   const authorW = authorTextW + authorPadX * 2;
   ctx.fillStyle = colors.fg;
@@ -536,7 +536,7 @@ async function exportImage() {
     try {
       await navigator.share({
         files: [file],
-        title: "词穷",
+        title: "詞窮",
         text: `${lyric.author} 《${lyric.song}》`,
       });
       return;
@@ -624,7 +624,7 @@ function renderCalendar() {
     grid.appendChild(cell);
   }
 
-  $("#calCount").textContent = `本月已记 ${entryCount} 天`;
+  $("#calCount").textContent = `本月已記 ${entryCount} 天`;
 }
 
 // ═══════════════ DAY MODAL ═══════════════
@@ -692,8 +692,8 @@ function getEntriesInRange(range) {
 function buildNarrative(entries, range) {
   if (entries.length === 0) {
     return range === "week"
-      ? "这一周还没有记录。<br><span style='font-size:13px;color:#999'>点几个标签，让一句歌词陪你写完它。</span>"
-      : "这个月才刚开始。";
+      ? "這一周還沒有記錄。<br><span style='font-size:13px;color:#999'>點幾個標籤，讓一句歌詞陪你寫完它。</span>"
+      : "這個月才剛開始。";
   }
   // Count tags
   const moodCount = {};
@@ -709,15 +709,15 @@ function buildNarrative(entries, range) {
   entries.forEach(([_, e]) => authorCount[e.author] = (authorCount[e.author]||0)+1);
   const topAuthor = Object.entries(authorCount).sort((a,b) => b[1]-a[1])[0];
 
-  const period = range === "week" ? "这一周" : "这一个月";
-  let narrative = `${period}你记录了 ${entries.length} 天。`;
-  if (topMood) narrative += `${topMood[0]}是常客，出现了 ${topMood[1]} 次。`;
-  if (topScene) narrative += `多数日子都在${topScene[0]}。`;
-  if (topAuthor) narrative += `<br><br>陪你最多的是${topAuthor[0]}的笔——他的话出现了 ${topAuthor[1]} 次。`;
+  const period = range === "week" ? "這一周" : "這一個月";
+  let narrative = `${period}你記錄了 ${entries.length} 天。`;
+  if (topMood) narrative += `${topMood[0]}是常客，出現了 ${topMood[1]} 次。`;
+  if (topScene) narrative += `多數日子都在${topScene[0]}。`;
+  if (topAuthor) narrative += `<br><br>陪你最多的是${topAuthor[0]}的筆——他的話出現了 ${topAuthor[1]} 次。`;
 
   // Last line of period
   const last = entries[entries.length-1][1];
-  narrative += `<br><br>最近的一句来自《${last.song}》：<br><span style="letter-spacing:0.04em">「${last.line}」</span>`;
+  narrative += `<br><br>最近的一句來自《${last.song}》：<br><span style="letter-spacing:0.04em">「${last.line}」</span>`;
 
   return narrative;
 }
@@ -735,7 +735,7 @@ function renderReport() {
   `;
   const list = $("#reportList");
   if (entries.length === 0) {
-    list.innerHTML = '<div class="empty"><div class="empty-line">空白也是一种诚实</div></div>';
+    list.innerHTML = '<div class="empty"><div class="empty-line">空白也是一種誠實</div></div>';
     return;
   }
   entries.reverse().forEach(([k, e]) => {
@@ -764,13 +764,13 @@ function seedDemoIfEmpty() {
   if (Object.keys(entries).length > 0) return;
   const today = new Date();
   const seedDays = [
-    { offset: -1, sceneIdx: 0, moodIdx: 2, feelIdx: 4 }, // 工作 透支 想改变
-    { offset: -2, sceneIdx: 5, moodIdx: 5, feelIdx: 5 }, // 独处 释然 顺其自然
-    { offset: -3, sceneIdx: 1, moodIdx: 0, feelIdx: 0 }, // 玩乐 开心 有收获
-    { offset: -5, sceneIdx: 6, moodIdx: 6, feelIdx: 6 }, // 想念 怀念 想念某人
-    { offset: -7, sceneIdx: 3, moodIdx: 5, feelIdx: 5 }, // 旅行 释然 顺其自然
-    { offset: -10, sceneIdx: 0, moodIdx: 4, feelIdx: 1 }, // 工作 焦虑 想逃
-    { offset: -13, sceneIdx: 2, moodIdx: 1, feelIdx: 5 }, // 躺平 平静 顺其自然
+    { offset: -1, sceneIdx: 0, moodIdx: 2, feelIdx: 4 }, // 工作 透支 想改變
+    { offset: -2, sceneIdx: 5, moodIdx: 5, feelIdx: 5 }, // 獨處 釋然 順其自然
+    { offset: -3, sceneIdx: 1, moodIdx: 0, feelIdx: 0 }, // 玩樂 開心 有收穫
+    { offset: -5, sceneIdx: 6, moodIdx: 6, feelIdx: 6 }, // 想念 懷念 想念某人
+    { offset: -7, sceneIdx: 3, moodIdx: 5, feelIdx: 5 }, // 旅行 釋然 順其自然
+    { offset: -10, sceneIdx: 0, moodIdx: 4, feelIdx: 1 }, // 工作 焦慮 想逃
+    { offset: -13, sceneIdx: 2, moodIdx: 1, feelIdx: 5 }, // 躺平 平靜 順其自然
   ];
   seedDays.forEach(s => {
     const d = new Date(today);

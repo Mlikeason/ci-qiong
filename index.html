@@ -1,12 +1,26 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-Hant-HK">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>词穷 · Lost for Words</title>
+  <title>詞窮 · Lost for Words</title>
+
+  <!-- iOS / Android home screen integration -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="詞窮">
+  <meta name="theme-color" content="#faf8f5">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@900&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +29,10 @@
 
   <!-- ═══════════════ TOP BAR ═══════════════ -->
   <header class="topbar">
-    <div class="brand">词穷</div>
+    <div class="brand">
+      <img src="icons/logo-64.png" class="brand-logo" alt="">
+      <span class="brand-name">詞窮</span>
+    </div>
     <div class="date" id="topDate"></div>
   </header>
 
@@ -24,31 +41,31 @@
 
     <div class="section">
       <div class="section-head">
-        <div class="section-title serif" id="todayPrompt">你今天主要在做什么？</div>
-        <button class="section-reshuffle" data-category="scene">换 一 批</button>
+        <div class="section-title serif" id="todayPrompt">你今天主要在做什麼？</div>
+        <button class="section-reshuffle" data-category="scene">換 一 批</button>
       </div>
       <div class="chips" id="sceneChips"></div>
     </div>
 
     <div class="section" id="moodSection" style="display:none">
       <div class="section-head">
-        <div class="section-title serif">那感觉怎么样？</div>
-        <button class="section-reshuffle" data-category="mood">换 一 批</button>
+        <div class="section-title serif">那感覺怎麼樣？</div>
+        <button class="section-reshuffle" data-category="mood">換 一 批</button>
       </div>
       <div class="chips" id="moodChips"></div>
     </div>
 
     <div class="section" id="feelingSection" style="display:none">
       <div class="section-head">
-        <div class="section-title serif">再具体一点？</div>
-        <button class="section-reshuffle" data-category="feeling">换 一 批</button>
+        <div class="section-title serif">再具體一點？</div>
+        <button class="section-reshuffle" data-category="feeling">換 一 批</button>
       </div>
       <div class="chips" id="feelingChips"></div>
     </div>
 
     <div class="action-row" id="actionRow" style="display:none">
       <button class="btn-primary" id="findBtn">送 我 一 句</button>
-      <button class="btn-ghost" id="resetBtn">重 选</button>
+      <button class="btn-ghost" id="resetBtn">重 選</button>
     </div>
 
     <div class="section" id="recentSection" style="margin-top:48px">
@@ -61,13 +78,13 @@
   <!-- ═══════════════ PAGE: PICK (3 face-down cards) ═══════════════ -->
   <section class="page pick-page" id="page-pick">
     <div class="pick-prompt">
-      <div class="section-label">挑 一 张</div>
-      <div class="pick-prompt-title serif">凭直觉，选你想翻开的那张</div>
-      <div class="pick-prompt-sub">颜色已经透露了语气</div>
+      <div class="section-label">挑 一 張</div>
+      <div class="pick-prompt-title serif">憑直覺，選你想翻開的那張</div>
+      <div class="pick-prompt-sub">顏色已經透露了語氣</div>
     </div>
     <div class="pick-cards" id="pickCards"></div>
     <div class="pick-skip">
-      <button id="pickSkip">不挑，随机给我一张</button>
+      <button id="pickSkip">不挑，隨機給我一張</button>
     </div>
   </section>
 
@@ -85,8 +102,8 @@
     <div class="card-tags" id="cardTags"></div>
 
     <div class="card-controls">
-      <button id="reshuffleBtn">换 一 句</button>
-      <button id="saveBtn">收 入 歌 历</button>
+      <button id="reshuffleBtn">換 一 句</button>
+      <button id="saveBtn">收 入 歌 歷</button>
       <button id="exportBtn">分 享</button>
     </div>
 
@@ -107,7 +124,7 @@
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-legend">
       <span id="calCount"></span>
-      <span>点击格子查看那一天</span>
+      <span>點擊格子查看那一天</span>
     </div>
   </section>
 
@@ -141,8 +158,8 @@
   <!-- ═══════════════ BOTTOM NAV ═══════════════ -->
   <nav class="nav">
     <a href="#today" class="nav-link active" data-page="today">今 天</a>
-    <a href="#calendar" class="nav-link" data-page="calendar">歌 历</a>
-    <a href="#report" class="nav-link" data-page="report">回 声</a>
+    <a href="#calendar" class="nav-link" data-page="calendar">歌 歷</a>
+    <a href="#report" class="nav-link" data-page="report">回 聲</a>
   </nav>
 
 </div>
